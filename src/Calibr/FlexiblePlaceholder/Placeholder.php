@@ -6,14 +6,19 @@ class Placeholder
 {
   protected $leftEdge = "{%";
   protected $rightEdge = "%}";
-  protected $tagName = "";
+  // array or string
+  protected $tagName;
+
+  // text can be set directly
+  public $text;
 
   /**
-   * this function should be overrided by user placeholder class
+   * this function can be overrided by user placeholder class
    * @param  [array] $options - parsed options
    * @return [string]
    */
   protected function getText($options) {
+    return $this->text;
   }
 
   public function __construct() {
@@ -44,8 +49,14 @@ class Placeholder
   }
 
   public function process($text) {
+    if(is_array($this->tagName)) {
+      $tagName = "(?:".implode("|", array_map("preg_quote", $this->tagName)).")";
+    }
+    else {
+      $tagName = preg_quote($this->tagName);
+    }
     $regExp = "@".preg_quote($this->leftEdge).
-              preg_quote($this->tagName)."(?:\[([a-z0-9_=,]+)\])?".
+              $tagName."(?:\[([a-z0-9_=,]+)\])?".
               preg_quote($this->rightEdge)."@i";
     return preg_replace_callback($regExp, array($this, "_pregCallback"), $text);
   }
