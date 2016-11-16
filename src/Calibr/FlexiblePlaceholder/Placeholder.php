@@ -45,7 +45,7 @@ class Placeholder
         $options[$key] = $value;
       }
     }
-    return $this->getText($options);
+    return $this->getText($options, $matches[0]);
   }
 
   public function process($text) {
